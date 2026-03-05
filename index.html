@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KBHCCD Master Plan – Progress Dashboard</title>
+
+<!-- Chart.js for visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+/* ============================================================
+   BRAND FONTS
+   ============================================================ */
+@font-face {
+  font-family: 'Avenir';
+  src: url('assets/fonts/Avenir.ttc') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Avenir';
+  src: url('assets/fonts/Avenir.ttc') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Avenir';
+  src: url('assets/fonts/Avenir.ttc') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Avenir';
+  src: url('assets/fonts/Avenir.ttc') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Avenir';
+  src: url('assets/fonts/Avenir.ttc') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* ============================================================
+   BRAND COLORS (CSS Custom Properties)
+   Red:      #ee3124   — alerts, accents
+   Blue:     #00b4ed   — primary action / highlight
+   DarkBlue: #253948   — headings, nav
+   Gray:     #64696f   — body text
+   ============================================================ */
+:root {
+  --red: #ee3124;
+  --blue: #00b4ed;
+  --dark-blue: #253948;
+  --gray: #64696f;
+  --light-gray: #f4f6f8;
+  --white: #ffffff;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --paused-bg: #e8e8e8;
+  --card-shadow: 0 2px 12px rgba(37, 57, 72, 0.08);
+  --card-hover-shadow: 0 6px 24px rgba(37, 57, 72, 0.15);
+  --radius: 12px;
+  --transition: 0.25s ease;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Avenir', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--gray);
+  background: var(--light-gray);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  color: var(--dark-blue);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+/* ============================================================
+   HEADER / NAV
+   ============================================================ */
+.site-header {
+  background: var(--white);
+  border-bottom: 3px solid var(--red);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 32px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.header-logo img {
+  height: 52px;
+  width: auto;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.memo-selector {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 14px;
+  border: 2px solid var(--blue);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--dark-blue);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.memo-selector:hover { background: rgba(0,180,236,0.08); }
+.header-date {
+  font-size: 14px;
+  color: var(--gray);
+  font-weight: 500;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 32px 60px;
+}
+
+/* ============================================================
+   HERO / SUMMARY BAR
+   ============================================================ */
+.hero {
+  background: linear-gradient(135deg, var(--dark-blue) 0%, #1a2d3d 100%);
+  border-radius: var(--radius);
+  padding: 36px 40px;
+  margin-bottom: 28px;
+  color: var(--white);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(0,180,236,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-title {
+  color: var(--white);
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+.hero-subtitle {
+  color: rgba(255,255,255,0.75);
+  font-size: 15px;
+  font-weight: 400;
+  max-width: 700px;
+}
+.hero-status-ring {
+  width: 140px;
+  height: 140px;
+  position: relative;
+  flex-shrink: 0;
+}
+.hero-status-ring canvas { width: 100% !important; height: 100% !important; }
+.hero-pct {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-weight: 800;
+  font-size: 32px;
+  line-height: 1;
+  pointer-events: none;
+}
+.hero-pct small {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+  opacity: 0.7;
+}
+
+/* ============================================================
+   KPI CARDS ROW
+   ============================================================ */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.kpi-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  box-shadow: var(--card-shadow);
+  text-align: center;
+  transition: var(--transition);
+}
+.kpi-card:hover { box-shadow: var(--card-hover-shadow); transform: translateY(-2px); }
+.kpi-value {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--dark-blue);
+  line-height: 1;
+}
+.kpi-value.green { color: var(--success); }
+.kpi-value.yellow { color: var(--warning); }
+.kpi-value.red { color: var(--red); }
+.kpi-value.blue { color: var(--blue); }
+.kpi-label {
+  font-size: 13px;
+  color: var(--gray);
+  margin-top: 6px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================================
+   SECTION HEADERS
+   ============================================================ */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 32px 0 18px;
+}
+.section-header h2 { font-size: 22px; }
+.section-line {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, var(--blue), transparent);
+  border-radius: 2px;
+}
+
+/* ============================================================
+   COMPONENT CARDS
+   ============================================================ */
+.components-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 20px;
+  margin-bottom: 28px;
+}
+.comp-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: var(--transition);
+  cursor: default;
+}
+.comp-card:hover { box-shadow: var(--card-hover-shadow); transform: translateY(-2px); }
+
+.comp-card-header {
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #eef1f4;
+}
+.comp-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 15px;
+  color: var(--white);
+  flex-shrink: 0;
+}
+.comp-num.on-track   { background: var(--success); }
+.comp-num.at-risk    { background: var(--warning); }
+.comp-num.paused     { background: #b0b0b0; }
+.comp-num.complete   { background: var(--blue); }
+
+.comp-title-wrap { flex: 1; min-width: 0; }
+.comp-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--dark-blue);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.comp-full-name {
+  font-size: 12px;
+  color: var(--gray);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.status-badge.on-track   { background: rgba(39,174,96,0.12); color: var(--success); }
+.status-badge.at-risk    { background: rgba(243,156,18,0.12); color: var(--warning); }
+.status-badge.paused     { background: rgba(0,0,0,0.06); color: #888; }
+.status-badge.complete   { background: rgba(0,180,236,0.12); color: var(--blue); }
+
+.comp-card-body { padding: 18px 22px; }
+
+/* Progress bar */
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.progress-track {
+  flex: 1;
+  height: 10px;
+  background: #eaedf0;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.8s cubic-bezier(.4,0,.2,1);
+  position: relative;
+}
+.progress-fill.on-track   { background: linear-gradient(90deg, var(--success), #2ecc71); }
+.progress-fill.at-risk    { background: linear-gradient(90deg, var(--warning), #f1c40f); }
+.progress-fill.paused     { background: #ccc; }
+.progress-fill.complete   { background: linear-gradient(90deg, var(--blue), #5bc0eb); }
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+  border-radius: 10px;
+}
+.progress-pct {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--dark-blue);
+  min-width: 42px;
+  text-align: right;
+}
+
+/* Trend arrow */
+.trend { font-size: 14px; font-weight: 800; }
+.trend.up   { color: var(--success); }
+.trend.flat { color: var(--gray); }
+.trend.down { color: var(--red); }
+
+/* Expandable detail sections */
+.comp-details { padding: 0 22px 18px; }
+.detail-section { margin-bottom: 10px; }
+.detail-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dark-blue);
+  padding: 6px 0;
+  text-align: left;
+}
+.detail-toggle .chevron {
+  transition: transform 0.2s;
+  font-size: 11px;
+}
+.detail-toggle.open .chevron { transform: rotate(90deg); }
+.detail-count {
+  background: var(--light-gray);
+  color: var(--gray);
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.detail-list {
+  list-style: none;
+  padding: 0 0 0 6px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+.detail-list.open { max-height: 800px; }
+.detail-list li {
+  font-size: 13px;
+  color: var(--gray);
+  padding: 4px 0 4px 14px;
+  position: relative;
+  line-height: 1.45;
+}
+.detail-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.detail-list.successes li::before { background: var(--success); }
+.detail-list.critical li::before  { background: var(--red); }
+.detail-list.other li::before     { background: var(--blue); }
+
+.comp-note {
+  font-size: 14px;
+  color: #999;
+  font-style: italic;
+  text-align: center;
+  padding: 16px 0;
+}
+
+/* ============================================================
+   MILESTONES TIMELINE
+   ============================================================ */
+.milestones-track {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  padding: 20px 0 8px;
+  -webkit-overflow-scrolling: touch;
+}
+.milestone {
+  position: relative;
+  flex: 1 0 160px;
+  max-width: 220px;
+  text-align: center;
+  padding: 0 12px;
+}
+.milestone::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #dde1e6;
+  z-index: 0;
+}
+.milestone:first-child::before { left: 50%; }
+.milestone:last-child::before  { right: 50%; }
+.ms-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  font-size: 16px;
+  color: var(--white);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.ms-dot.complete    { background: var(--success); }
+.ms-dot.in-progress { background: var(--blue); animation: pulse 2s infinite; }
+.ms-dot.upcoming    { background: #ccc; }
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,180,236,0.4); }
+  50%      { box-shadow: 0 0 0 10px rgba(0,180,236,0); }
+}
+
+.ms-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark-blue);
+  line-height: 1.3;
+  margin-bottom: 3px;
+}
+.ms-date {
+  font-size: 11px;
+  color: var(--gray);
+}
+
+/* ============================================================
+   CHARTS SECTION
+   ============================================================ */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+.chart-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  padding: 24px;
+}
+.chart-card h3 {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+.chart-card canvas { max-height: 300px; }
+
+/* ============================================================
+   ARCHIVE PANEL
+   ============================================================ */
+.archive-panel {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  padding: 24px 28px;
+  margin-top: 12px;
+}
+.archive-panel h3 { font-size: 16px; margin-bottom: 14px; }
+.archive-list { list-style: none; }
+.archive-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid #eef1f4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.archive-list li:last-child { border: none; }
+.archive-list .a-date { font-weight: 700; color: var(--dark-blue); font-size: 14px; }
+.archive-list .a-title { font-size: 13px; color: var(--gray); }
+.archive-btn {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border: 2px solid var(--blue);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--blue);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.archive-btn:hover { background: var(--blue); color: var(--white); }
+.archive-btn.active { background: var(--blue); color: var(--white); }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.site-footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  .header-inner { padding: 12px 16px; }
+  .container { padding: 16px; }
+  .hero { grid-template-columns: 1fr; padding: 24px; text-align: center; }
+  .hero-status-ring { margin: 0 auto; }
+  .hero-title { font-size: 22px; }
+  .components-grid { grid-template-columns: 1fr; }
+  .charts-row { grid-template-columns: 1fr; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 500px) {
+  .kpi-row { grid-template-columns: 1fr; }
+  .header-logo img { height: 36px; }
+}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  .site-header { position: static; box-shadow: none; }
+  .comp-card:hover, .kpi-card:hover { transform: none; box-shadow: none; }
+  .memo-selector, .archive-btn { display: none; }
+  body { background: #fff; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#" class="header-logo">
+      <img src="assets/images/logo.png" alt="KBHCCD Master Plan" />
+    </a>
+    <div class="header-right">
+      <select class="memo-selector" id="memoSelector" aria-label="Select weekly memo">
+        <!-- Populated by JS -->
+      </select>
+      <span class="header-date" id="headerDate"></span>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<main class="container">
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div>
+      <h1 class="hero-title" id="heroTitle">Master Plan Progress</h1>
+      <p class="hero-subtitle" id="heroSubtitle"></p>
+    </div>
+    <div class="hero-status-ring">
+      <canvas id="overallRing"></canvas>
+      <div class="hero-pct">
+        <span id="heroPct">0</span>
+        <small>Overall</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- KPI CARDS -->
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <!-- MILESTONES -->
+  <div class="section-header">
+    <h2>Key Milestones</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="milestones-track" id="milestones"></div>
+
+  <!-- CHARTS -->
+  <div class="section-header">
+    <h2>Component Overview</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="charts-row">
+    <div class="chart-card">
+      <h3>Progress by Component</h3>
+      <canvas id="barChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Status Distribution</h3>
+      <canvas id="doughnutChart"></canvas>
+    </div>
+  </div>
+
+  <!-- COMPONENT CARDS -->
+  <div class="section-header">
+    <h2>Component Details</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="components-grid" id="componentsGrid"></div>
+
+  <!-- ARCHIVE -->
+  <div class="section-header">
+    <h2>Memo Archive</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="archive-panel" id="archivePanel"></div>
+
+</main>
+
+<footer class="site-footer">
+  Kay Bailey Hutchison Convention Center Dallas &mdash; Master Plan Progress Dashboard
+</footer>
+
+<!-- ============================================================
+     DATA & APP LOGIC
+     ============================================================ -->
+<script src="data/memos.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // ---- Chart instances (so we can destroy & recreate) ----
+  let overallRingChart, barChartInst, doughnutChartInst;
+
+  // ---- Status helpers ----
+  const STATUS_LABELS = {
+    "on-track": "On Track",
+    "at-risk": "At Risk",
+    paused: "Paused",
+    complete: "Complete",
+  };
+  const TREND_ARROWS = { up: "\u25B2", flat: "\u25AC", down: "\u25BC" };
+
+  // ---- Initialize ----
+  function init() {
+    populateMemoSelector();
+    renderMemo(getLatestMemo());
+  }
+
+  // ---- Populate selector ----
+  function populateMemoSelector() {
+    const sel = document.getElementById("memoSelector");
+    sel.innerHTML = "";
+    MEMOS.slice()
+      .reverse()
+      .forEach((m) => {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = m.date;
+        sel.appendChild(opt);
+      });
+    sel.addEventListener("change", () => {
+      renderMemo(getMemoById(sel.value));
+    });
+  }
+
+  // ---- Master render ----
+  function renderMemo(memo) {
+    document.getElementById("headerDate").textContent = "Report: " + memo.date;
+    document.getElementById("heroTitle").textContent = memo.title;
+    document.getElementById("heroSubtitle").textContent = memo.summary;
+
+    renderOverallRing(memo.overallProgress);
+    renderKPIs(memo);
+    renderMilestones(memo.keyMilestones);
+    renderBarChart(memo);
+    renderDoughnutChart(memo);
+    renderComponentCards(memo);
+    renderArchive(memo.id);
+  }
+
+  // ---- Overall ring ----
+  function renderOverallRing(pct) {
+    document.getElementById("heroPct").textContent = pct + "%";
+    if (overallRingChart) overallRingChart.destroy();
+    overallRingChart = new Chart(
+      document.getElementById("overallRing").getContext("2d"),
+      {
+        type: "doughnut",
+        data: {
+          datasets: [
+            {
+              data: [pct, 100 - pct],
+              backgroundColor: ["#00b4ed", "rgba(255,255,255,0.12)"],
+              borderWidth: 0,
+            },
+          ],
+        },
+        options: {
+          cutout: "78%",
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          animation: { animateRotate: true, duration: 1200 },
+        },
+      }
+    );
+  }
+
+  // ---- KPI cards ----
+  function renderKPIs(memo) {
+    const comps = memo.components;
+    const active = comps.filter((c) => c.status !== "paused").length;
+    const paused = comps.filter((c) => c.status === "paused").length;
+    const atRisk = comps.filter((c) => c.status === "at-risk").length;
+    const totalSuccesses = comps.reduce(
+      (s, c) => s + c.successes.length,
+      0
+    );
+    const totalCritical = comps.reduce(
+      (s, c) => s + c.criticalPath.length,
+      0
+    );
+
+    const cards = [
+      { value: comps.length, label: "Total Components", cls: "blue" },
+      { value: active, label: "Active", cls: "green" },
+      { value: paused, label: "Paused", cls: "" },
+      { value: atRisk, label: "At Risk", cls: "yellow" },
+      { value: totalSuccesses, label: "Successes This Week", cls: "green" },
+      { value: totalCritical, label: "Critical Path Items", cls: "red" },
+    ];
+
+    document.getElementById("kpiRow").innerHTML = cards
+      .map(
+        (c) => `
+      <div class="kpi-card">
+        <div class="kpi-value ${c.cls}">${c.value}</div>
+        <div class="kpi-label">${c.label}</div>
+      </div>`
+      )
+      .join("");
+  }
+
+  // ---- Milestones ----
+  function renderMilestones(milestones) {
+    const icons = {
+      complete: "\u2713",
+      "in-progress": "\u25CF",
+      upcoming: "\u25CB",
+    };
+    document.getElementById("milestones").innerHTML = milestones
+      .map(
+        (m) => `
+      <div class="milestone">
+        <div class="ms-dot ${m.status}">${icons[m.status]}</div>
+        <div class="ms-label">${m.label}</div>
+        <div class="ms-date">${m.date}</div>
+      </div>`
+      )
+      .join("");
+  }
+
+  // ---- Bar chart ----
+  function renderBarChart(memo) {
+    if (barChartInst) barChartInst.destroy();
+    const activeComps = memo.components.filter((c) => c.status !== "paused");
+    const labels = activeComps.map((c) => "C" + c.number + " " + c.shortName);
+    const data = activeComps.map((c) => c.progress);
+    const colors = activeComps.map((c) =>
+      c.status === "on-track"
+        ? "#27ae60"
+        : c.status === "at-risk"
+        ? "#f39c12"
+        : c.status === "complete"
+        ? "#00b4ed"
+        : "#ccc"
+    );
+
+    barChartInst = new Chart(
+      document.getElementById("barChart").getContext("2d"),
+      {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              data,
+              backgroundColor: colors,
+              borderRadius: 6,
+              maxBarThickness: 60,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          indexAxis: "y",
+          scales: {
+            x: {
+              max: 100,
+              ticks: {
+                callback: (v) => v + "%",
+                font: { family: "Avenir, sans-serif" },
+              },
+              grid: { color: "#eef1f4" },
+            },
+            y: {
+              ticks: { font: { family: "Avenir, sans-serif", size: 12 } },
+              grid: { display: false },
+            },
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ctx.parsed.x + "% complete",
+              },
+            },
+          },
+          animation: { duration: 1000, easing: "easeOutQuart" },
+        },
+      }
+    );
+  }
+
+  // ---- Doughnut chart ----
+  function renderDoughnutChart(memo) {
+    if (doughnutChartInst) doughnutChartInst.destroy();
+    const statusCounts = {};
+    memo.components.forEach((c) => {
+      statusCounts[c.status] = (statusCounts[c.status] || 0) + 1;
+    });
+    const statusColors = {
+      "on-track": "#27ae60",
+      "at-risk": "#f39c12",
+      paused: "#cccccc",
+      complete: "#00b4ed",
+    };
+
+    doughnutChartInst = new Chart(
+      document.getElementById("doughnutChart").getContext("2d"),
+      {
+        type: "doughnut",
+        data: {
+          labels: Object.keys(statusCounts).map(
+            (s) => STATUS_LABELS[s]
+          ),
+          datasets: [
+            {
+              data: Object.values(statusCounts),
+              backgroundColor: Object.keys(statusCounts).map(
+                (s) => statusColors[s]
+              ),
+              borderWidth: 2,
+              borderColor: "#fff",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          cutout: "55%",
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                padding: 16,
+                font: { family: "Avenir, sans-serif", size: 13 },
+              },
+            },
+          },
+          animation: { animateRotate: true, duration: 1000 },
+        },
+      }
+    );
+  }
+
+  // ---- Component cards ----
+  function renderComponentCards(memo) {
+    const grid = document.getElementById("componentsGrid");
+    grid.innerHTML = memo.components
+      .map((c) => {
+        const isPaused = c.status === "paused";
+        const detailSections = buildDetailSections(c);
+        return `
+        <div class="comp-card">
+          <div class="comp-card-header">
+            <div class="comp-num ${c.status}">${c.number}</div>
+            <div class="comp-title-wrap">
+              <div class="comp-title">${c.shortName}</div>
+              <div class="comp-full-name">${c.name}</div>
+            </div>
+            <span class="status-badge ${c.status}">${STATUS_LABELS[c.status]}</span>
+          </div>
+          <div class="comp-card-body">
+            ${
+              isPaused
+                ? `<div class="comp-note">${c.note || "Paused"}</div>`
+                : `
+              <div class="progress-row">
+                <div class="progress-track">
+                  <div class="progress-fill ${c.status}" style="width:${c.progress}%"></div>
+                </div>
+                <span class="progress-pct">${c.progress}%</span>
+                <span class="trend ${c.trend}">${TREND_ARROWS[c.trend]}</span>
+              </div>
+            `
+            }
+          </div>
+          ${!isPaused ? `<div class="comp-details">${detailSections}</div>` : ""}
+        </div>`;
+      })
+      .join("");
+
+    // Wire up toggles
+    grid.querySelectorAll(".detail-toggle").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        btn.classList.toggle("open");
+        const list = btn.nextElementSibling;
+        list.classList.toggle("open");
+      });
+    });
+  }
+
+  function buildDetailSections(comp) {
+    let html = "";
+    if (comp.successes.length) {
+      html += detailBlock("Successes", "successes", comp.successes);
+    }
+    if (comp.criticalPath.length) {
+      html += detailBlock("Critical Path Items", "critical", comp.criticalPath);
+    }
+    if (comp.otherActivity.length) {
+      html += detailBlock("Other Activity", "other", comp.otherActivity);
+    }
+    return html;
+  }
+
+  function detailBlock(title, cls, items) {
+    return `
+      <div class="detail-section">
+        <button class="detail-toggle" aria-expanded="false">
+          <span class="chevron">&#9654;</span>
+          ${title}
+          <span class="detail-count">${items.length}</span>
+        </button>
+        <ul class="detail-list ${cls}">
+          ${items.map((i) => `<li>${i}</li>`).join("")}
+        </ul>
+      </div>`;
+  }
+
+  // ---- Archive ----
+  function renderArchive(currentId) {
+    const panel = document.getElementById("archivePanel");
+    if (MEMOS.length <= 1) {
+      panel.innerHTML = `
+        <h3>Memo Archive</h3>
+        <p style="color:var(--gray);font-size:14px;">
+          Weekly memos will appear here as they are added. Select past memos from
+          the dropdown above or browse them in this list.
+        </p>
+        <ul class="archive-list">
+          ${MEMOS.map(
+            (m) => `
+            <li>
+              <div>
+                <span class="a-date">${m.date}</span>
+                <span class="a-title">&mdash; ${m.title}</span>
+              </div>
+              <button class="archive-btn ${m.id === currentId ? "active" : ""}"
+                      onclick="document.getElementById('memoSelector').value='${m.id}';document.getElementById('memoSelector').dispatchEvent(new Event('change'))">
+                ${m.id === currentId ? "Viewing" : "View"}
+              </button>
+            </li>`
+          ).join("")}
+        </ul>`;
+    } else {
+      panel.innerHTML = `
+        <h3>Memo Archive (${MEMOS.length} reports)</h3>
+        <ul class="archive-list">
+          ${MEMOS.slice()
+            .reverse()
+            .map(
+              (m) => `
+            <li>
+              <div>
+                <span class="a-date">${m.date}</span>
+                <span class="a-title">&mdash; ${m.title}</span>
+              </div>
+              <button class="archive-btn ${m.id === currentId ? "active" : ""}"
+                      onclick="document.getElementById('memoSelector').value='${m.id}';document.getElementById('memoSelector').dispatchEvent(new Event('change'))">
+                ${m.id === currentId ? "Viewing" : "View"}
+              </button>
+            </li>`
+            )
+            .join("")}
+        </ul>`;
+    }
+  }
+
+  // ---- Boot ----
+  document.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+</body>
+</html>
