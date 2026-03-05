@@ -106,7 +106,7 @@ const MEMOS = [
         number: 4,
         name: "TBAAL & The Women's Museum (TWM) Relocation",
         shortName: "TBAAL & TWM",
-        status: "at-risk",
+        status: "on-track",
         progress: 65,
         trend: "up",
         successes: [
