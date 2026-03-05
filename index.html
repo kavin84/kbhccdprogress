@@ -49,7 +49,7 @@ h1,h2,h3,h4{color:var(--dark);font-weight:800;line-height:1.15}
 /* ============================================================
    HERO — BIG & BOLD
    ============================================================ */
-.hero{background:linear-gradient(135deg,var(--dark) 0%,#15222d 100%);border-radius:0 0 var(--r) var(--r);padding:56px 48px 48px;color:var(--white);display:grid;grid-template-columns:1fr 180px;gap:40px;align-items:center;position:relative;overflow:hidden;margin-bottom:36px}
+.hero{background:linear-gradient(135deg,var(--dark) 0%,#15222d 100%);border-radius:0 0 var(--r) var(--r);padding:56px 48px 48px;color:var(--white);position:relative;overflow:hidden;margin-bottom:36px}
 .hero::after{content:'';position:absolute;top:-80px;right:-80px;width:360px;height:360px;background:radial-gradient(circle,rgba(0,180,236,.13),transparent 70%);pointer-events:none}
 .hero h1{font-size:36px;color:var(--white);margin-bottom:8px}
 .hero p{color:rgba(255,255,255,.78);font-size:17px;max-width:780px;line-height:1.55}
@@ -133,7 +133,7 @@ h1,h2,h3,h4{color:var(--dark);font-weight:800;line-height:1.15}
 .tab-panel.active{display:block}
 
 /* ---- Component hero inside tab ---- */
-.comp-hero{padding:48px;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center;border-bottom:1px solid #eef1f4}
+.comp-hero{padding:48px;border-bottom:1px solid #eef1f4}
 .comp-hero-left h3{font-size:28px;margin-bottom:4px}
 .comp-hero-left .comp-full{font-size:14px;color:var(--gray);margin-bottom:14px}
 .comp-hero-left .comp-headline{font-size:18px;color:var(--dark);font-weight:500;line-height:1.5;max-width:650px}
@@ -207,22 +207,68 @@ h1,h2,h3,h4{color:var(--dark);font-weight:800;line-height:1.15}
    RESPONSIVE
    ============================================================ */
 @media(max-width:960px){
-  .hdr-in,.wrap{padding-left:20px;padding-right:20px}
-  .hero{grid-template-columns:1fr;padding:36px 28px;text-align:center}
-  .hero h1{font-size:26px}
-  .ring-box{margin:0 auto}
-  .comp-hero{grid-template-columns:1fr;padding:28px;text-align:center}
-  .comp-ring{margin:0 auto}
+  .hdr-in,.wrap{padding-left:16px;padding-right:16px}
+  .hero{padding:32px 20px;text-align:center}
+  .hero h1{font-size:24px}
+  .hero p{font-size:15px}
+  .comp-hero{padding:24px 20px}
+  .comp-hero-left h3{font-size:22px}
+  .comp-hero-left .comp-headline{font-size:15px}
   .comp-cols{grid-template-columns:1fr}
-  .comp-body{padding:28px}
-  .photo-section{padding:0 28px 28px}
-  .kpis{grid-template-columns:repeat(2,1fr)}
-  .tab-btn{padding:10px 18px;font-size:13px}
+  .comp-body{padding:24px 20px}
+  .photo-section{padding:0 20px 24px}
+  .kpis{grid-template-columns:repeat(2,1fr);gap:10px}
+  .kpi{padding:16px}
+  .kpi-v{font-size:32px}
+  .tab-btn{padding:10px 16px;font-size:13px}
+  .tab-btn .tab-status{display:none}
+  .ms{flex:0 0 140px}
+  .sec h2{font-size:20px}
+  .archive{padding:20px}
 }
-@media(max-width:500px){
-  .kpis{grid-template-columns:1fr}
-  .hdr-logo img{height:36px}
+@media(max-width:600px){
+  .hdr-in{padding:10px 12px;gap:10px}
+  .hdr-r{width:100%;justify-content:space-between}
+  .sel{font-size:12px;padding:6px 10px;flex:1;min-width:0}
+  .hdr-date{font-size:12px}
+  .hdr-logo img{height:40px}
+  .hero{padding:24px 16px;margin-bottom:20px}
+  .hero h1{font-size:20px}
+  .hero p{font-size:14px}
+  .wrap{padding:0 12px 40px}
+  .kpis{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px}
+  .kpi{padding:14px 10px;border-radius:10px}
+  .kpi-v{font-size:28px}
+  .kpi-l{font-size:10px}
+  .tabs-nav{gap:2px}
+  .tab-btn{padding:10px 12px;font-size:12px;border-radius:10px 10px 0 0}
+  .tab-btn .tab-num{width:22px;height:22px;font-size:11px;margin-right:6px}
+  .tab-panels{border-radius:0 0 10px 10px;min-height:auto}
+  .comp-hero{padding:20px 16px}
+  .comp-hero-left h3{font-size:20px}
+  .comp-hero-left .comp-full{font-size:12px}
+  .comp-hero-left .comp-headline{font-size:14px}
+  .comp-body{padding:20px 16px}
+  .comp-section h4{font-size:14px}
+  .item-list li{font-size:13px;padding:7px 0 7px 18px}
+  .photo-section{padding:0 16px 20px}
   .photo-grid{grid-template-columns:1fr}
+  .photo-card img{height:180px}
+  .ms-wrap{padding:20px 12px}
+  .ms{flex:0 0 120px}
+  .ms-lb{font-size:11px}
+  .ms-dot{width:32px;height:32px;font-size:14px}
+  .sec{margin:28px 0 14px}
+  .sec h2{font-size:18px}
+  .archive{padding:16px}
+  .archive-list li{flex-direction:column;align-items:flex-start;gap:8px}
+  .archive-list .a-title{display:block}
+}
+@media(max-width:380px){
+  .hdr-logo img{height:32px}
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpi-v{font-size:24px}
+  .tab-btn{padding:8px 10px;font-size:11px}
 }
 @media print{
   .hdr{position:static;box-shadow:none}
@@ -250,13 +296,6 @@ h1,h2,h3,h4{color:var(--dark);font-weight:800;line-height:1.15}
   <div>
     <h1 id="heroTitle">Master Plan Progress</h1>
     <p id="heroSub"></p>
-  </div>
-  <div class="ring-box">
-    <svg viewBox="0 0 120 120">
-      <circle class="ring-bg" cx="60" cy="60" r="50"/>
-      <circle class="ring-fg" id="mainRing" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="314.16"/>
-    </svg>
-    <div class="ring-txt"><span id="mainPct">0%</span><small>Overall</small></div>
   </div>
 </section>
 
@@ -299,9 +338,9 @@ h1,h2,h3,h4{color:var(--dark);font-weight:800;line-height:1.15}
   "use strict";
 
   var STATUS_LABEL={"on-track":"On Track","advancing":"Advancing","underway":"Underway","paused":"Paused"};
-  var TREND_ARROW={up:"\u25B2 Trending Up",flat:"\u25AC Steady",down:"\u25BC"};
   var CIRC=2*Math.PI*50;
   var CIRC_SM=2*Math.PI*45;
+  var SHOW_COMPONENTS=[1,3,4,5];
 
   // ---- Init ----
   function init(){
@@ -325,8 +364,6 @@ h1,h2,h3,h4{color:var(--dark);font-weight:800;line-height:1.15}
     document.getElementById("hdrDate").textContent="Report: "+memo.date;
     document.getElementById("heroTitle").textContent=memo.title;
     document.getElementById("heroSub").textContent=memo.summary;
-    animateRing(document.getElementById("mainRing"),CIRC,memo.overallProgress);
-    document.getElementById("mainPct").textContent=memo.overallProgress+"%";
     renderKPIs(memo);
     renderMilestones(memo.keyMilestones);
     renderTabs(memo);
@@ -372,16 +409,17 @@ h1,h2,h3,h4{color:var(--dark);font-weight:800;line-height:1.15}
   function renderTabs(memo){
     var nav=document.getElementById("tabsNav");
     var panels=document.getElementById("tabPanels");
+    var filtered=memo.components.filter(function(c){return SHOW_COMPONENTS.indexOf(c.number)!==-1});
 
-    nav.innerHTML=memo.components.map(function(c,i){
+    nav.innerHTML=filtered.map(function(c,i){
       return '<button class="tab-btn'+(i===0?' active':'')+'" data-idx="'+i+'">'+
         '<span class="tab-num '+c.status+'">'+c.number+'</span>'+
-        c.shortName+
+        'Component '+c.number+
         '<span class="tab-status '+c.status+'">'+(STATUS_LABEL[c.status]||c.status)+'</span>'+
       '</button>';
     }).join("");
 
-    panels.innerHTML=memo.components.map(function(c,i){
+    panels.innerHTML=filtered.map(function(c,i){
       return '<div class="tab-panel'+(i===0?' active':'')+'" data-idx="'+i+'">'+buildPanel(c)+'</div>';
     }).join("");
 
@@ -394,19 +432,9 @@ h1,h2,h3,h4{color:var(--dark);font-weight:800;line-height:1.15}
         panels.querySelectorAll(".tab-panel").forEach(function(p){
           p.classList.toggle("active",p.dataset.idx===idx);
         });
-        // Animate the ring in the newly-visible panel
-        var panel=panels.querySelector('.tab-panel[data-idx="'+idx+'"]');
-        var ring=panel.querySelector(".cr-fg");
-        if(ring){
-          var pct=parseFloat(ring.dataset.pct);
-          animateRing(ring,2*Math.PI*45,pct);
-        }
       });
     });
 
-    // Animate first panel ring
-    var firstRing=panels.querySelector(".tab-panel.active .cr-fg");
-    if(firstRing) animateRing(firstRing,2*Math.PI*45,parseFloat(firstRing.dataset.pct));
 
     // Photo click handlers
     panels.querySelectorAll(".photo-card").forEach(function(card){
@@ -425,17 +453,11 @@ h1,h2,h3,h4{color:var(--dark);font-weight:800;line-height:1.15}
         (c.note||"Paused")+'</p></div>';
     }
 
-    var ringColor=c.status==="on-track"?"":"blue";
     var heroHtml='<div class="comp-hero">'+
       '<div class="comp-hero-left">'+
-        '<h3>'+c.shortName+'<span class="trend-badge '+c.trend+'">'+TREND_ARROW[c.trend]+'</span></h3>'+
+        '<h3>Component '+c.number+'</h3>'+
         '<div class="comp-full">'+c.name+'</div>'+
         '<div class="comp-headline">'+c.headline+'</div>'+
-      '</div>'+
-      '<div class="comp-ring">'+
-        '<svg viewBox="0 0 100 100"><circle class="cr-bg" cx="50" cy="50" r="45"/>'+
-        '<circle class="cr-fg '+ringColor+'" cx="50" cy="50" r="45" data-pct="'+c.progress+'" stroke-dasharray="'+CIRC_SM+'" stroke-dashoffset="'+CIRC_SM+'"/></svg>'+
-        '<div class="comp-ring-txt">'+c.progress+'%<small>Progress</small></div>'+
       '</div>'+
     '</div>';
 
